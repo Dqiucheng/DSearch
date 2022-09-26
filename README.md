@@ -2,12 +2,12 @@
 ===============
 #  1、下载地址
 ~~~
-https://github.com/Dqiucheng/appApi
+https://github.com/Dqiucheng/DSearch
 ~~~
 下载完成后放入src目录
 
 # 2、安装部署
-2.1、如需改包名，需同时修改引入地址，全局将`appApi/`替换为`包名/`
+2.1、如需改包名，需同时修改引入地址，全局将`DSearch/`替换为`包名/`
 
 2.2、进入项目下的config目录，将`tomlConfigDemo`更名为`tomlConfig`
 
