@@ -1,10 +1,10 @@
 package router
 
 import (
-	"DSearch/controller"
 	"DSearch/core"
 	"DSearch/logger"
 	"DSearch/middleware"
+	"DSearch/router/app"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -31,8 +31,8 @@ func register(router *gin.Engine) {
 	// Html路由注册
 	htmlRouter(router)
 
-	// Api路由注册
-	apiRouter(router)
+	// 应用路由注册
+	app.InitRouter(router)
 
 	logger.SysLog("路由注册成功").Info("Server日志")
 }
@@ -58,14 +58,4 @@ func htmlRouter(router *gin.Engine) {
 			"errmsg": "Not method",
 		})
 	})
-}
-
-// apiRouter Api路由注册
-func apiRouter(router *gin.Engine) {
-	apiGroup := router.Group("/api")
-	apiGroup.Use(core.Handle(middleware.RequestLimit))
-	{
-		api := new(controller.Api)
-		apiGroup.Any("/", core.Handle(api.Test))
-	}
 }

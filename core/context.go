@@ -93,7 +93,7 @@ func (c *Context) authBindJSON(paramJson []byte, obj interface{}, authType bool)
 func (c *Context) AuthBodyBindJSON(obj interface{}, isAuthSign bool) (int64, error) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
 	if len(body) == 0 {
-		return 0, errors.New("未获取到数据")
+		return 0, errors.New("未获取到body数据")
 	}
 	return c.authBindJSON(body, obj, isAuthSign)
 }
@@ -106,7 +106,7 @@ func (c *Context) AuthBodyBindJSON(obj interface{}, isAuthSign bool) (int64, err
 func (c *Context) AuthAesEcbBodyBindJSON(obj interface{}, isAuthSign bool, aesKey ...string) (ucUid int64, err error) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
 	if len(body) == 0 {
-		return 0, errors.New("未获取到数据")
+		return 0, errors.New("未获取到body数据")
 	}
 
 	logger.LogContext(c.Context, string(body)).Info("加密入参")
