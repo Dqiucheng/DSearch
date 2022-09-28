@@ -3,16 +3,31 @@ package db
 import (
 	"DSearch/config"
 	"DSearch/logger"
+	"context"
 	"fmt"
+	"github.com/goccy/go-json"
 	"github.com/mitchellh/mapstructure"
 	"github.com/olivere/elastic/v7"
+	"go.uber.org/zap"
 )
 
-type EsWriter struct {
+type ElasticLogger struct {
+}
+type ElasticErrLogger struct {
+}
+type ElasticDecode struct {
 }
 
-func (w EsWriter) Printf(format string, v ...interface{}) {
-	fmt.Printf(format, v)
+func (w ElasticLogger) Printf(format string, v ...interface{}) {
+	logger.SysL().Info("elasticsearch日志", zap.String("logData", fmt.Sprintf(format, v)))
+}
+func (w ElasticErrLogger) Printf(format string, v ...interface{}) {
+	msg := fmt.Errorf(format, v)
+	logger.SysL().Error("elasticsearch日志", zap.Error(msg))
+	logger.ErrPush(context.Background(), msg)
+}
+func (w ElasticDecode) Decode(data []byte, v interface{}) error {
+	return json.Unmarshal(data, v)
 }
 
 var elasticsearchClientConfigs map[string]*elastic.Client
@@ -35,10 +50,15 @@ func ConnectElasticsearch() {
 
 		clientOptionFunc := make([]elastic.ClientOptionFunc, 0)
 		clientOptionFunc = append(clientOptionFunc, elastic.SetSniff(false)) // SetSniff启用或禁用集群嗅探器（默认情况下启用）。
+		clientOptionFunc = append(clientOptionFunc, elastic.SetDecoder(ElasticDecode{}))
+
+		clientOptionFunc = append(clientOptionFunc, elastic.SetErrorLog(ElasticErrLogger{}))
+		clientOptionFunc = append(clientOptionFunc, elastic.SetInfoLog(ElasticLogger{}))
+		if config.AppMode() != "release" {
+			clientOptionFunc = append(clientOptionFunc, elastic.SetTraceLog(ElasticLogger{}))
+		}
+
 		clientOptionFunc = append(clientOptionFunc, elastic.SetURL(dbConf.Addresses...))
-		clientOptionFunc = append(clientOptionFunc, elastic.SetErrorLog(EsWriter{}))
-		clientOptionFunc = append(clientOptionFunc, elastic.SetInfoLog(EsWriter{}))
-		//clientOptionFunc = append(clientOptionFunc, elastic.SetTraceLog(EsWriter{}))
 		if dbConf.Username != "" && dbConf.Password != "" {
 			clientOptionFunc = append(clientOptionFunc, elastic.SetBasicAuth(dbConf.Username, dbConf.Password))
 		}
