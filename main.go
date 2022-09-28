@@ -122,4 +122,5 @@ func httpServerRun(router *gin.Engine) {
 func createDB() {
 	db.ConnectMySQLS()
 	db.ConnectRedisS()
+	db.ConnectElasticsearch()
 }
