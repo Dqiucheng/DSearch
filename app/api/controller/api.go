@@ -1,9 +1,8 @@
 package controller
 
 import (
+	"DSearch/app/elasticUtil"
 	"DSearch/core"
-	"DSearch/db"
-	"fmt"
 )
 
 type Api struct {
@@ -61,23 +60,15 @@ func (Api) Test(ctx *core.Context) {
 			},
 		},
 	}
-	fmt.Println(db.Es().CreateIndex(indexName).BodyJson(mapping).Do(ctx.Context)) // 创建索引
-	fmt.Println(db.Es().IndexExists(indexName).Do(ctx.Context))                   // 判断索引是否存在
 
-	fmt.Println(db.Es().PutMapping().
-		Index(indexName).
-		BodyJson(mi{
-			"properties": mi{
-				"id": mi{ //整形字段, 允许精确匹配
-					"type": "integer",
-				},
-			},
-		}).
-		Do(ctx.Context))	// 更新索引
+	aa := elasticUtil.Elastic{
+		Ctx: ctx.Context,
+	}
+	aa.CreateIndex(indexName, mapping)
 
-	fmt.Println(db.Es().IndexAnalyze().Analyzer("ik_max_word").Text("哈撒给").Do(ctx.Context)) // 预览关键词分词效果
-	fmt.Println(db.Es().DeleteIndex(indexName).Do(ctx.Context))                             // 删除索引
+	bb, _ := aa.GetMapping(indexName)
 
-	ctx.Json(0, "ok", nil)
+	aa.DeleteIndex(indexName)
+	ctx.Json(0, "ok", bb)
 	return
 }
