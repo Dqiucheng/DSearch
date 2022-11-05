@@ -3,7 +3,6 @@ package db
 import (
 	"DSearch/config"
 	"DSearch/logger"
-	"context"
 	"fmt"
 	"github.com/goccy/go-json"
 	"github.com/mitchellh/mapstructure"
@@ -24,7 +23,7 @@ func (w ElasticLogger) Printf(format string, v ...interface{}) {
 func (w ElasticErrLogger) Printf(format string, v ...interface{}) {
 	msg := fmt.Errorf(format, v)
 	logger.SysL().Error("elasticsearch日志", zap.Error(msg))
-	logger.ErrPush(context.Background(), msg)
+	logger.ErrPush(nil, msg)
 }
 func (w ElasticDecode) Decode(data []byte, v interface{}) error {
 	return json.Unmarshal(data, v)
