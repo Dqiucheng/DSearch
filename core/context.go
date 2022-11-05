@@ -90,7 +90,7 @@ func (c *Context) authBindJSON(paramJson []byte, obj interface{}, authType bool)
 //
 // obj 			结构体。
 // authType 	签名验证类型，0不做验证，1Sign
-func (c *Context) AuthBodyBindJSON(obj interface{}, isAuthSign bool) (int64, error) {
+func (c *Context) AuthBodyBindJSON(obj interface{}, isAuthSign bool) (ucUid int64, err error) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
 	if len(body) == 0 {
 		return 0, errors.New("未获取到body数据")
