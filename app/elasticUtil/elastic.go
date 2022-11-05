@@ -32,7 +32,7 @@ func (receiver Elastic) CreateIndex(indexName string, mapping interface{}) (*ela
 
 // GetMapping 查看索引映射
 // indexName	参数可传空
-func (receiver *Elastic) GetMapping(indexName string) (map[string]interface{}, error) {
+func (receiver Elastic) GetMapping(indexName string) (map[string]interface{}, error) {
 	return db.Es().GetMapping().Index(indexName).Do(receiver.Ctx)
 }
 
@@ -69,8 +69,8 @@ func (receiver Elastic) GetIdDoc(indexName string, docId string) (*elastic.GetRe
 	return db.Es().Get().Index(indexName).Id(docId).Do(receiver.Ctx)
 }
 
-// BoolQuery 按条件查询文档
-func (receiver Elastic) BoolQuery(indexName, name string, val interface{}) (*elastic.SearchResult, error) {
+// BoolQueryKeyVal 按指定key查询文档
+func (receiver Elastic) BoolQueryKeyVal(indexName, name string, val interface{}) (*elastic.SearchResult, error) {
 	// 创建新的bool查询
 	query := elastic.NewBoolQuery()
 
@@ -79,6 +79,11 @@ func (receiver Elastic) BoolQuery(indexName, name string, val interface{}) (*ela
 
 	//source, _ := query.Source()
 	//fmt.Println(source)	// 打印bool查询语句
-	
+
+	return db.Es().Search().Index(indexName).Query(query).Do(receiver.Ctx)
+}
+
+// BoolQuery 自定义条件查询文档
+func (receiver Elastic) BoolQuery(indexName string, query elastic.Query) (*elastic.SearchResult, error) {
 	return db.Es().Search().Index(indexName).Query(query).Do(receiver.Ctx)
 }
