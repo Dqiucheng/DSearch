@@ -5,8 +5,8 @@ import (
 	"DSearch/logger"
 	"context"
 	"errors"
-	redis "github.com/go-redis/redis/v9"
 	"github.com/mitchellh/mapstructure"
+	redis "github.com/redis/go-redis/v9"
 	"reflect"
 	"time"
 )
